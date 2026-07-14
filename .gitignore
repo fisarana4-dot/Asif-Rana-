@@ -1,10 +1,17 @@
+__pycache__/
+*.pyc
+*.db
+.pytest_cache/
+
 *.o
 *.out
 *.elf
 v16000_engine
 *.prof
 *.perf
+
 .vscode/
 .DS_Store
+
 build/
 dist/
