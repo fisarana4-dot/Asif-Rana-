@@ -1,21 +1,40 @@
-# V16000 Gold Strategy - ARM Neoverse V2 Execution Engine
+# NEXRA V16000
 
-Production-grade ultra-low-latency trading execution platform optimized for sub-2ms SLA compliance.
+Enterprise Decision Intelligence Platform for Trading, Amazon, and Export Operations.
 
-## Features
-- **SVE2/NEON Vectorization**: 4x batch processing throughput
-- **Lock-free Architecture**: Zero mutex contention
-- **Thermal Management**: Proactive throttling >85°C
-- **NUMA Awareness**: Multi-socket memory locality
-- **Black Swan Protocol**: Volatility-triggered nano-lot mode
+**Mathematics Decides. AI Explains. Humans Govern.**
 
-## Branches
-- `main`: Stable base
-- `dev-v16000-optimized`: Development branch with full optimization suite
+## Overview
+NEXRA V16000 combines deterministic decision engines, evidence-ledger auditing, and AI explanations to support operational decisions in:
 
-## Compilation
-```bash
-g++ -O3 -march=armv8.2-a+sve2 -mtune=neoverse-v2 \
-    -ffast-math -funroll-loops -fvectorize \
-    -mcpu=neoverse-v2 v16000_optimized.cpp -o v16000_engine -lpthread
+- Gold Trading (XAUUSD)
+- Amazon Business Operations
+- Export & Logistics Planning
+
+## Current Status
+⚠️ Early-stage repository under active development.
+
+## Repository Structure
 ```
+app/
+tests/
+main.py
+Dockerfile
+README.md
+```
+
+## Planned Components
+- Decision Evidence Ledger
+- Deterministic Rules Engine
+- Risk Engine
+- Governance Layer
+- Docker Deployment
+- API Gateway
+
+## Roadmap
+- Phase 1: Infrastructure
+- Phase 2: Service Logic
+- Phase 3: Production Pilots
+
+## License
+TBD```
