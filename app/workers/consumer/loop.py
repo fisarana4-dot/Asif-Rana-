@@ -4,3 +4,5 @@ RUNNING=True
 def start():
     while RUNNING:
         process()
+from app.workers.heartbeat.worker_heartbeat import beat
+        beat("worker-1")
