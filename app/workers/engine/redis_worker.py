@@ -15,3 +15,6 @@ def process():
     except Exception:
         add(job)
         set_status(job,"FAILED")
+        if should_retry(1):
+            push(job)
+        return None
