@@ -8,3 +8,10 @@ def process():
     job=pop()
     if not job: return None
     set_status(job,"RUNNING")
+    try:
+        data=json.loads(job)
+        set_status(job,"SUCCESS")
+        return data
+    except Exception:
+        add(job)
+        set_status(job,"FAILED")
