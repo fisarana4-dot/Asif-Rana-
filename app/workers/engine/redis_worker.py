@@ -18,3 +18,6 @@ def process():
         if should_retry(1):
             push(job)
         return None
+        if not isinstance(data,dict): raise ValueError
+        if "id" not in data: raise ValueError
+        if "task" not in data: raise ValueError
