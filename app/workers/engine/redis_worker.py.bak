@@ -10,10 +10,14 @@ def process():
     set_status(job,"RUNNING")
     try:
         data=json.loads(job)
-        if not isinstance(data,dict): raise ValueError
-        if "id" not in data or "task" not in data: raise ValueError
         set_status(job,"SUCCESS")
         return data
     except Exception:
         add(job)
+        set_status(job,"FAILED")
+        if should_retry(1):
+            push(job)
         return None
+        if not isinstance(data,dict): raise ValueError
+        if "id" not in data: raise ValueError
+        if "task" not in data: raise ValueError
