@@ -1,0 +1,5 @@
+import csv
+class GoldDataLoader:
+    def load(self,path):
+        with open(path,newline='') as f:return list(csv.DictReader(f))
+data_loader=GoldDataLoader()

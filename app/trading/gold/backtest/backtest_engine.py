@@ -1,0 +1,2 @@
+from app.trading.gold.data.data_loader import data_loader
+def run(p): d=data_loader.load(p); return {'candles':len(d),'first':d[0],'last':d[-1]}

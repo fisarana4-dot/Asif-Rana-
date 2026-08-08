@@ -1,0 +1,5 @@
+from app.decision.decision_memory_bridge import DecisionMemoryBridge
+class DecisionEngine:
+    def __init__(self): self.memory=DecisionMemoryBridge()
+    def evaluate(self,data): return {'decision':'ANALYZE','memory':self.memory.connect(data),'input':data}
+decision_engine=DecisionEngine()

@@ -1,0 +1,3 @@
+class EvidenceEngine:
+    def analyze(self,data): return {'decision':data,'confidence':0,'evidence':[]}
+evidence_engine=EvidenceEngine()

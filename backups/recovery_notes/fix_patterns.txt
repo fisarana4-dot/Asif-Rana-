@@ -1,0 +1,1 @@
+RULE: Avoid large paste. Build modules step-by-step and test after each change.
