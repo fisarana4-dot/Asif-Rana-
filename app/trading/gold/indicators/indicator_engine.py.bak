@@ -1,8 +1,0 @@
-from app.trading.gold.indicators.ema_engine import ema_engine
-from app.trading.gold.indicators.rsi_engine import rsi_engine
-from app.trading.gold.indicators.atr_engine import atr_engine
-class GoldIndicators:
-    def ema200(self,prices): return ema_engine.ema(prices,200)
-    def rsi(self,prices,period=14): return rsi_engine.value(prices,period)
-    def atr(self,high,low,close,period=14): return atr_engine.value(high,low,close,period)
-indicators=GoldIndicators()
