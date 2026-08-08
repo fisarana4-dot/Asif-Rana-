@@ -1,0 +1,1 @@
+vwma_engine=VWMAEngine() -m py_compile app/trading/gold/indicators/vwma_engine.py
