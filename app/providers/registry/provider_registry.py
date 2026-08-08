@@ -1,1 +1,1 @@
-provider_registry='NEXRA Provider Registry Ready'
+class ProviderRegistry: pass; provider_registry=ProviderRegistry()
