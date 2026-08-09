@@ -1,18 +1,9 @@
+from app.intelligence.providers.gemini import GeminiProvider
 class NexraBrain:
     providers = ["gemini"]
     def status(self): return {"status":"READY","providers":self.providers}
     def ask(self, text): return {"provider":"gemini","request":text}
-    def gemini(self, text):
-        from google import genai
-        k=open("/data/data/com.termux/files/home/.gemini_key").read().strip()
-        import subprocess
-        import subprocess
-        u="https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent"
-        h="x-goog-api-key: "+k
-        d="{\"contents\":[{\"parts\":[{\"text\":\""+text+"\"}]}]}"
-        r=subprocess.run(["curl","-s","-H",h,"-H","Content-Type: application/json","-d",d,u],capture_output=True,text=True)
-        import json
-        return json.loads(r.stdout)["candidates"][0]["content"]["parts"][0]["text"]
+    def gemini(self, text): return GeminiProvider().ask(text)
     def intent(self, text): return self.gemini("Classify intent: "+text)
     def decide(self, text): return {"intent":self.intent(text),"action":"RESEARCH"}
     def route(self, text): return {"action":"RESEARCH","provider":"gemini"}
@@ -25,3 +16,4 @@ class NexraBrain:
     def provider_info(self, name): return {"name":name,"available":self.available(name),"capability":self.capability(name)}
     def select(self, need): return self.best(need)
     def execute(self, text, need="reasoning"): return {"provider":self.select(need),"response":self.gemini(text)}
+    def ask_gemini(self, text): return GeminiProvider().ask(text)
