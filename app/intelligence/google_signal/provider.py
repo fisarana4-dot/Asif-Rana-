@@ -1,0 +1,1 @@
+class GoogleDataProvider: pass
