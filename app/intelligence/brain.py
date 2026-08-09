@@ -1,5 +1,7 @@
+from app.providers.registry.provider_registry import ProviderRegistry
 from app.intelligence.providers.gemini import GeminiProvider
 class NexraBrain:
+    registry = ProviderRegistry
     providers = ["gemini"]
     def status(self): return {"status":"READY","providers":self.providers}
     def ask(self, text): return {"provider":"gemini","request":text}
