@@ -1,0 +1,106 @@
+app/trading/gold/backtest/backtest_engine.py:2:def run(p): d=data_loader.load(p); return {'candles':len(d),'first':d[0],'last':d[-1]}
+app/trading/gold/backtest/backtest_engine.py:3:def sl_hit(direction,sl,d):
+app/trading/gold/data/data_loader.py:2:class GoldDataLoader:
+app/trading/gold/data/data_loader.py:3:    def load(self,p):
+app/trading/gold/data/bridge/mt5_demo.py:1:class MT5DemoBridge:
+app/trading/gold/data/bridge/mt5_demo.py:2:    def status(self): return "READY"
+app/trading/gold/data/bridge/mt5_demo.py:3:    def load_csv(self,p):
+app/trading/gold/strategy/strategy_engine.py:4:class GoldStrategy:
+app/trading/gold/strategy/strategy_engine.py:5:    def run(self,d):
+app/trading/gold/signals/signal_engine.py:3:class GoldSignals:
+app/trading/gold/signals/signal_engine.py:4:    def generate(self,d): return [{"signal":d.get("signal","NO_TRADE")}]
+app/trading/gold/signals/signal_engine.py:5:    def score(self,d): return sum(d.get(x)=="BUY" for x in ["ema_trend","rsi_signal","vwma_signal"])
+app/trading/gold/signals/signal_engine.py:6:    def sell_score(self,d): return sum(d.get(x)=="SELL" for x in ["ema_trend","rsi_signal","vwma_signal"])
+app/trading/gold/signals/signal_engine.py:8:def signal_decision(d): return "BUY" if signals.score(d)>signals.sell_score(d) else "SELL" if signals.sell_score(d)>signals.score(d) else "NO_TRADE"
+app/trading/gold/signals/candle_pattern_engine.py:1:class CandlePatternEngine:
+app/trading/gold/signals/candle_pattern_engine.py:2:    def detect(self,d): return []
+app/trading/gold/signals/entry_confirmation.py:1:class EntryConfirmation:
+app/trading/gold/signals/entry_confirmation.py:2:    def confirm(self,d): return False
+app/trading/gold/signals/entry_score.py:1:class EntryScore:
+app/trading/gold/signals/entry_score.py:2:    def calculate(self,d): return 0
+app/trading/gold/signals/signal_conflict.py:1:class SignalConflict:
+app/trading/gold/signals/signal_conflict.py:2:    def check(self,d): return []
+app/trading/gold/signals/trade_filter.py:1:class TradeFilter:
+app/trading/gold/signals/trade_filter.py:2:    def evaluate(self,d): return "WAIT"
+app/trading/gold/indicators/indicator_engine.py:10:class GoldIndicators:
+app/trading/gold/indicators/indicator_engine.py:11:    def ema200(self,prices): return ema_engine.ema(prices,200)
+app/trading/gold/indicators/indicator_engine.py:12:    def rsi(self,prices,period=14): return rsi_engine.value(prices,period)
+app/trading/gold/indicators/indicator_engine.py:13:    def atr(self,high,low,close,period=14): return atr_engine.value(high,low,close,period)
+app/trading/gold/indicators/indicator_engine.py:14:    def vwma(self,prices,volume,period=20): return vwma_engine.value(prices,volume,period)
+app/trading/gold/indicators/indicator_engine.py:15:    def volume_ma(self,volume,period=20): return volume_ma.value(volume,period)
+app/trading/gold/indicators/indicator_engine.py:16:    def fibonacci(self,high,low): return fibonacci_engine.levels(high,low)
+app/trading/gold/indicators/indicator_engine.py:17:    def trendline(self,prices): return trendline_engine.detect(prices)
+app/trading/gold/indicators/indicator_engine.py:18:    def rsi_divergence(self,prices,rsi): return rsi_divergence_engine.detect(prices,rsi)
+app/trading/gold/indicators/indicator_engine.py:19:    def obv_divergence(self,prices,obv): return obv_divergence_engine.detect(prices,obv)
+app/trading/gold/indicators/ema_engine.py:1:class EMAEngine:
+app/trading/gold/indicators/ema_engine.py:2:    def ema(self,prices,period=200):
+app/trading/gold/indicators/rsi_engine.py:1:class RSIEngine:
+app/trading/gold/indicators/rsi_engine.py:2:    def value(self,prices,period=14):
+app/trading/gold/indicators/atr_engine.py:1:class ATREngine:
+app/trading/gold/indicators/atr_engine.py:2:    def value(self,high,low,close,period=14):
+app/trading/gold/indicators/vwma_engine.py:1:class VWMAEngine:
+app/trading/gold/indicators/vwma_engine.py:2:    def value(self,prices,volume,period=20):
+app/trading/gold/indicators/rsi_divergence_engine.py:1:class RSIDivergenceEngine:
+app/trading/gold/indicators/rsi_divergence_engine.py:2:    def detect(self,prices,rsi):
+app/trading/gold/indicators/volume_ma.py:1:class VolumeMA:
+app/trading/gold/indicators/volume_ma.py:2:    def value(self,volume,period=20):
+app/trading/gold/indicators/fibonacci_engine.py:1:class FibonacciEngine:
+app/trading/gold/indicators/fibonacci_engine.py:2:    def levels(self,high,low):
+app/trading/gold/indicators/trendline_engine.py:1:class TrendLineEngine:
+app/trading/gold/indicators/trendline_engine.py:2:    def detect(self,prices):
+app/trading/gold/indicators/obv_divergence_engine.py:1:class OBVDivergenceEngine:
+app/trading/gold/indicators/obv_divergence_engine.py:2:    def detect(self,prices,obv):
+app/trading/gold/reports/report_engine.py:1:def report(r): print(r)
+app/trading/gold/volume/volume_engine.py:1:class VolumeEngine:
+app/trading/gold/volume/volume_engine.py:2:    def analyze(self,d): return [int(x['volume']) for x in d]
+app/trading/gold/volume/vsa/vsa_engine.py:2:class VSAEngine:
+app/trading/gold/volume/vsa/clv.py:1:def clv(d): return (d["Close"]-d["Low"])/(d["High"]-d["Low"]) if d["High"]!=d["Low"] else 0
+app/trading/gold/volume/volume_profile.py:1:class VolumeProfile:
+app/trading/gold/volume/volume_profile.py:2:    def calculate(self,d): return {}
+app/trading/gold/volume/tpo_engine.py:1:class TPOEngine:
+app/trading/gold/volume/tpo_engine.py:2:    def calculate(self,d): return {}
+app/trading/gold/volume/cvd_engine.py:1:class CVDEngine:
+app/trading/gold/volume/cvd_engine.py:2:    def calculate(self,d): return None
+app/trading/gold/volume/wyckoff_engine.py:1:class WyckoffEngine:
+app/trading/gold/volume/wyckoff_engine.py:2:    def detect(self,d): return []
+app/trading/gold/structure/structure_engine.py:3:def analyze(d): return {"bos":bos_engine.detect(d),"choch":choch_engine.detect(d)}
+app/trading/gold/structure/bos_engine.py:1:class BOSEngine:
+app/trading/gold/structure/bos_engine.py:2:    def detect(self,d): return "BOS_UP" if d.get("Close",0)>d.get("swing_high",0) else "BOS_DOWN" if d.get("Close",0)<d.get("swing_low",0) else ""
+app/trading/gold/structure/choch_engine.py:1:class CHoCHEngine:
+app/trading/gold/structure/choch_engine.py:2:    def detect(self,d): return "CHoCH_UP" if d.get("Close",0)>d.get("swing_high",0) else "CHoCH_DOWN" if d.get("Close",0)<d.get("swing_low",0) else ""
+app/trading/gold/structure/smc_engine.py:1:class SMCEngine:
+app/trading/gold/structure/smc_engine.py:2:    def analyze(self,d): return []
+app/trading/gold/structure/liquidity_engine.py:1:class LiquidityEngine:
+app/trading/gold/structure/liquidity_engine.py:2:    def detect(self,d): return []
+app/trading/gold/structure/order_block_engine.py:1:class OrderBlockEngine:
+app/trading/gold/structure/order_block_engine.py:2:    def detect(self,d): return []
+app/trading/gold/structure/fvg_engine.py:1:class FVGEngine:
+app/trading/gold/structure/fvg_engine.py:2:    def detect(self,d): return []
+app/trading/gold/risk/stop_loss_engine.py:1:class StopLossEngine:
+app/trading/gold/risk/stop_loss_engine.py:2:    def calculate(self,entry,sl): return abs(entry-sl)
+app/trading/gold/risk/stop_loss_engine.py:3:    def atr_sl(self,atr,mult=1.5): return atr*mult
+app/trading/gold/risk/stop_loss_engine.py:4:    def swing_sl(self,entry,swing,buf=0.5): return abs(entry-swing)-buf
+app/trading/gold/risk/stop_loss_engine.py:5:    def candle_sl(self,entry,direction,d): return entry-d["low"] if direction=="BUY" else d["high"]-entry
+app/trading/gold/risk/stop_loss_engine.py:6:    def sl_price(self,entry,direction,risk): return entry-risk if direction=="BUY" else entry+risk
+app/trading/gold/core/mtf_engine.py:2:class MTFEngine:
+app/trading/gold/core/mtf_engine.py:3:    def bias(self,d): return {tf:d.get(tf,"UNKNOWN") for tf in TIMEFRAMES}
+app/trading/gold/core/market_regime.py:1:class MarketRegime:
+app/trading/gold/core/market_regime.py:2:    def detect(self,d): return "UNKNOWN"
+app/trading/gold/core/no_trade_engine.py:1:class NoTradeEngine:
+app/trading/gold/core/no_trade_engine.py:2:    def check(self,d): return False
+app/trading/gold/core/daily_control.py:1:class DailyControl:
+app/trading/gold/core/daily_control.py:2:    def allow(self,d): return True
+app/trading/gold/core/news_guard.py:1:class NewsGuard:
+app/trading/gold/core/news_guard.py:2:    def blocked(self,d): return False
+app/trading/gold/core/black_swan_guard.py:1:class BlackSwanGuard:
+app/trading/gold/core/black_swan_guard.py:2:    def blocked(self,d): return False
+app/trading/gold/core/risk_governor.py:1:class RiskGovernor:
+app/trading/gold/core/risk_governor.py:2:    def allow(self,d): return True
+app/trading/gold/core/trade_decision.py:1:class TradeDecision:
+app/trading/gold/core/trade_decision.py:2:    def decide(self,d):
+app/trading/gold/core/session_guard.py:1:class SessionGuard:
+app/trading/gold/core/session_guard.py:2:    def allowed(self,d): return True
+app/trading/gold/core/mtf_conflict.py:1:class MTFConflict:
+app/trading/gold/core/mtf_conflict.py:2:    def blocked(self,d): return False
+app/trading/gold/core/daily_price.py:1:class DailyPrice:
+app/trading/gold/core/daily_price.py:2:    def analyze(self,d): return {}
