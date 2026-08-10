@@ -1,1 +1,1 @@
-def clv(d): return (d["close"]-d["low"])/(d["high"]-d["low"]) if d["high"]!=d["low"] else 0
+def clv(d): return (d["Close"]-d["Low"])/(d["High"]-d["Low"]) if d["High"]!=d["Low"] else 0
