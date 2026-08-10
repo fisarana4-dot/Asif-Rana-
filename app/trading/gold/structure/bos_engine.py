@@ -1,3 +1,3 @@
 class BOSEngine:
-    def detect(self,d): return []
+    def detect(self,d): return "BOS_UP" if d.get("Close",0)>d.get("swing_high",0) else "BOS_DOWN" if d.get("Close",0)<d.get("swing_low",0) else ""
 bos_engine=BOSEngine()
