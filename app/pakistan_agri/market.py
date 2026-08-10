@@ -1,0 +1,1 @@
+RICE_PRICE=300
