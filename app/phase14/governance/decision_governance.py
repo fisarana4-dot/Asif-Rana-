@@ -9,4 +9,4 @@ class DecisionRecord:
 class DecisionGovernance:
 
     def validate(self, decision_id, confidence):
-        return
+        return DecisionRecord(decision_id, confidence >= 0.80)
