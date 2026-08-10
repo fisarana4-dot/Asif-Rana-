@@ -7,3 +7,7 @@ aiofiles
 httpx
 redis
 pytest
+aiosqlite
+email-validator
+python-jose[cryptography]
+passlib[bcrypt]
