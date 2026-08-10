@@ -8,3 +8,4 @@ class BuyerFinderAgent:
         if buyer.get("country"):
             score += 20
         
+        return score

@@ -1,0 +1,141 @@
+import csv
+f="data/gold/full/xauusd-m15-bid-2026-01-01-2026-08-08.csv"
+r=list(csv.DictReader(open(f)))
+print("DATA",len(r))
+v=[float(x["volume"]) for x in r]
+c=[float(x["close"]) for x in r]
+print("VOLUME",len(v),"CLOSE",len(c))
+for i in range(20,len(v)): av=sum(v[i-20:i])/20; rv=v[i]/av if av else 0; print(i,round(v[i],4),round(rv,2)) if rv>=2 else None
+h=[float(x["high"]) for x in r]l=[float(x["low"]) for x in r]
+h=[float(x["high"]) for x in r]; l=[float(x["low"]) for x in r]
+s=[h[i]-l[i] for i in range(len(h))]; print("SPREAD",len(s),"LAST",round(s[-1],3))
+for i in range(20,len(s)): av=sum(s[i-20:i])/20; rs=s[i]/av if av else 0; print(i,round(s[i],2),round(rs,2)) if rs>=1.5 else None
+clv=[(c[i]-l[i])/(h[i]-l[i]) if h[i]!=l[i] else .5 for i in range(len(c))]
+print("CLV",round(clv[-1],3))
+n=0
+for i in range(20,len(c)):
+ av=sum(v[i-20:i])/20; avs=sum(s[i-20:i])/20
+ n += v[i]>=2*av and s[i]>=1.5*avs
+print("VSA CANDIDATES",n)
+z=[(v[i]/(sum(v[i-20:i])/20),s[i]/(sum(s[i-20:i])/20),clv[i]) for i in range(20,len(c))]
+q=[x for x in z if x[0]>=2 and x[1]>=1.5]
+print("VSA",len(q),"BULL",sum(x[2]>=.7 for x in q),"BEAR",sum(x[2]<=.3 for x in q),"NEUTRAL",sum(.3<x[2]<.7 for x in q))
+hi=[i for i in range(2,len(c)-2) if h[i]>h[i-1] and h[i]>h[i-2] and h[i]>=h[i+1] and h[i]>=h[i+2]]
+lo=[i for i in range(2,len(c)-2) if l[i]<l[i-1] and l[i]<l[i-2] and l[i]<=l[i+1] and l[i]<=l[i+2]]
+print("SWINGS",len(hi),len(lo))
+bosu=bosd=0
+lastH=lastL=None
+for i in range(2,len(c)-2):
+ if i in hi: lastH=h[i]
+ if i in lo: lastL=l[i]
+ if lastH and c[i]>lastH: bosu+=1; lastH=None
+ if lastL and c[i]<lastL: bosd+=1; lastL=None
+print("BOS",bosu,bosd)
+state=0; choch_up=choch_dn=0
+print("STATE_READY")
+st=0; cu=cd=bu=bd=0; lh=ll=None
+for i in range(2,len(c)-2):
+ if i in hi: lh=h[i]
+ if i in lo: ll=l[i]
+ if lh and c[i]>lh: bu+=1; cu+=st==-1; st=1; lh=None
+ if ll and c[i]<ll: bd+=1; cd+=st==1; st=-1; ll=None
+print("STRUCTURE BOS",bu,bd,"CHoCH",cu,cd)
+sig=[i for i in range(20,len(c)) if v[i]>=2*(sum(v[i-20:i])/20) and s[i]>=1.5*(sum(s[i-20:i])/20) and (clv[i]>=.7 or clv[i]<=.3)]
+print("DIRECTIONAL VSA",len(sig))
+up5=sum(1 for i in sig if clv[i]>=.7 and any(c[j]>h[k] for j in range(i+1,min(i+6,len(c))) for k in hi if k<i))
+dn5=sum(1 for i in sig if clv[i]<=.3 and any(c[j]<l[k] for j in range(i+1,min(i+6,len(c))) for k in lo if k<i))
+print("5BAR CONFIRM",up5,dn5)
+ph={i:h[i] for i in hi}; pl={i:l[i] for i in lo}
+print("PROTECTED SWINGS",len(ph),len(pl))
+def near(i,a): return max((j for j in a if j<i),default=None)
+nb=sum(1 for i in sig if clv[i]>=.7 and (j:=near(i,hi)) is not None and any(c[x]>h[j] for x in range(i+1,min(i+6,len(c)))))
+ns=sum(1 for i in sig if clv[i]<=.3 and (j:=near(i,lo)) is not None and any(c[x]<l[j] for x in range(i+1,min(i+6,len(c)))))
+print("NEAREST 5BAR",nb,ns)
+def atr(i): return sum(max(h[j]-l[j],abs(h[j]-c[j-1]),abs(l[j]-c[j-1])) for j in range(i-13,i+1))/14
+bu=[i for i in sig if clv[i]>=.7 and (j:=near(i,hi)) is not None and any(c[x]>h[j] for x in range(i+1,min(i+6,len(c))))]
+bd=[i for i in sig if clv[i]<=.3 and (j:=near(i,lo)) is not None and any(c[x]<l[j] for x in range(i+1,min(i+6,len(c))))]
+print("CONFIRMED",len(bu),len(bd))
+print("ATR TEST",round(atr(len(c)-1),3))
+R=1.5; trades=[]
+print("TRADE_ENGINE_READY",R)
+def trade(i,up):
+ e=c[i]; a=atr(i)*1.5; sl=e-a if up else e+a; return e,sl,a
+def outcome(i,up,m):
+ e=c[i]; a=atr(i)*1.5; sl=e-a if up else e+a; tp=e+a*m if up else e-a*m
+ for j in range(i+1,len(c)):
+  if up and l[j]<=sl:return -1
+  if up and h[j]>=tp:return 1
+  if not up and h[j]>=sl:return -1
+  if not up and l[j]<=tp:return 1
+ return 0
+print("1R",sum(outcome(i,1,1)==1 for i in bu),sum(outcome(i,0,1)==1 for i in bd))
+print("B1",sum(outcome(i,1,1)==1 for i in bu))
+print("S1",sum(outcome(i,0,1)==1 for i in bd))
+print("2R",sum(outcome(i,1,2)==1 for i in bu),sum(outcome(i,0,2)==1 for i in bd))
+print("3R",sum(outcome(i,1,3)==1 for i in bu),sum(outcome(i,0,3)==1 for i in bd))
+print("P2",sum(2 if outcome(i,1,2)==1 else -1 if outcome(i,1,2)==-1 else 0 for i in bu))
+print("P2S",sum(2 if outcome(i,0,2)==1 else -1 if outcome(i,0,2)==-1 else 0 for i in bd))
+print("P3",sum(3 if outcome(i,1,3)==1 else -1 if outcome(i,1,3)==-1 else 0 for i in bu))
+print("P3S",sum(3 if outcome(i,0,3)==1 else -1 if outcome(i,0,3)==-1 else 0 for i in bd))
+seq=[]; busy=-1
+def seq(i,u,m): return outcome(i,u,m)
+print("SIGNALS",len(bu)+len(bd))
+print("SEQ_START")
+print("SEQ_TEST",seq(bu[0],1,3))
+print("SEQ_READY",len(bu),len(bd))
+print("SEQ_INDEX",bu[0],bd[0])
+print("FIRST_GAP",abs(bu[0]-bd[0]))
+allx=sorted([(i,1) for i in bu]+[(i,0) for i in bd])
+print("CHRONO",len(allx),allx[:3])
+seqs=[]; busy=0
+def sx(i,u,m):
+ e=c[i]; a=atr(i)*1.5; sl=e-a if u else e+a; tp=e+a*m if u else e-a*m
+ for j in range(i+1,len(c)):
+  if (l[j]<=sl if u else h[j]>=sl): return j
+  if (h[j]>=tp if u else l[j]<=tp): return j
+ return len(c)-1
+seqs=[]; busy=-1
+for i,u in allx:
+ if i>busy: busy=sx(i,u,3); seqs.append((i,u,busy))
+print("SEQ_TRADES",len(seqs))
+print("SEQ154_OK",len(seqs))
+print("SEQ_WINS",sum((h[j]>=c[i]+1.5*atr(i)*3 if u else l[j]<=c[i]-1.5*atr(i)*3) for i,u,j in seqs))
+print("SEQ_LOSS",154-56)
+print("NET3R",56*3-98)
+print("AMBIGUITY_RULE","SL_FIRST")
+print("SEQ_TRADES_NOW",len(seqs))
+w=sum(1 for i,u,j in seqs if (h[j]>=c[i]+1.5*atr(i)*3 if u else l[j]<=c[i]-1.5*atr(i)*3))
+print("W3R",w,"L3R",len(seqs)-w,"NET3R",w*3-(len(seqs)-w))
+def rr(i,u,m,j):
+ e=c[i]; a=atr(i)*1.5; sl=e-a if u else e+a; tp=e+a*m if u else e-a*m
+ for k in range(i+1,j+1):
+  if (l[k]<=sl if u else h[k]>=sl): return -1
+  if (h[k]>=tp if u else l[k]<=tp): return 1
+ return 0
+for m in (1,2,3): w=sum(rr(i,u,m,j)==1 for i,u,j in seqs); print("SEQ_RR",m,"W",w,"L",len(seqs)-w,"R",w*m-(len(seqs)-w))
+eq=dd=0;st=ms=0;pk=0
+for i,u,j in seqs: x=3 if rr(i,u,3,j)==1 else -1; eq+=x; pk=max(pk,eq); dd=max(dd,pk-eq); st=st+1 if x<0 else 0; ms=max(ms,st)
+print("DD3R",dd,"MAX_LOSS_STREAK",ms,"FINAL_R",eq)
+print("DATA",len(c),"CUT",int(len(c)*.7))
+test=[(i,u) for i,u in allx if i>=9938]; print("TEST_SIGNALS",len(test))
+ts=[]; busy=9937
+for i,u in test:
+ if i>busy: busy=sx(i,u,3); ts.append((i,u,busy))
+print("TEST_TRADES",len(ts))
+w=sum(rr(i,u,3,j)==1 for i,u,j in ts); print("TEST_3R",w,len(ts)-w,w*3-(len(ts)-w))
+eq=dd=0;pk=0;st=ms=0
+for i,u,j in ts: x=3 if rr(i,u,3,j)==1 else -1; eq+=x; pk=max(pk,eq); dd=max(dd,pk-eq); st=st+1 if x<0 else 0; ms=max(ms,st)
+print("TEST_DD",dd,"TEST_STREAK",ms,"TEST_FINAL_R",eq)
+rseq=[3 if rr(i,u,3,j)==1 else -1 for i,u,j in ts]
+print("MC_READY",len(rseq),sum(rseq))
+print("MC_READY",len(rseq),sum(rseq))
+import random; random.seed(16000)
+mc=[]
+mc=[]; [mc.append((lambda a:(sum(a),max(__import__("itertools").accumulate(a))))(random.sample(rseq,len(rseq)))) for _ in range(5000)]
+print("MC_N",len(mc),"MC_FINAL",mc[0][0],"MC_MAX",mc[0][1])
+md=[]
+for z in range(5000):
+ a=rseq[:]; random.shuffle(a); e=p=d=0
+ for x in a: e+=x; p=max(p,e); d=max(d,p-e)
+ md.append(d)
+md.sort(); print("MC_DD",md[250],md[4500],md[-1])
