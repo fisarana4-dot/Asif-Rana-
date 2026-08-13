@@ -1,0 +1,1 @@
+class MarketAdapter: pass
