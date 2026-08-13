@@ -1,0 +1,5 @@
+import json
+from app.autonomy.research.providers import ask
+def metrics(product):
+ r=ask("JSON metrics 0-100: "+product)
+ return r["text"]
