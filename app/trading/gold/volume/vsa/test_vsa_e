@@ -1,0 +1,4 @@
+from app.trading.gold.volume.vsa.vsa_engine import VSAEngine
+
+def test_vsa_engine():
+ assert VSAEngine().no_demand({}) == []
